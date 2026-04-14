@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroNotify - Crop Price Monitoring system</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Poppins', sans-serif; }
+    html { scroll-behavior: smooth; }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'agro': {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-white text-gray-800 overflow-auto">
+  <div class="w-full min-h-full flex flex-col" id="app-wrapper">
+   <!-- Navbar -->
+   <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex items-center justify-between h-16">
+      <!-- Logo --> <a href="#" class="flex items-center gap-2.5 group"> <span class="text-4xl group-hover:scale-110 transition-transform">🌱</span><span class="text-2xl font-bold bg-gradient-to-r from-agro-700 to-agro-600 bg-clip-text text-transparent">AgroNotify</span> </a> <!-- Desktop Nav -->
+      <div class="hidden md:flex items-center gap-8">
+       <a href="#home" class="text-gray-600 hover:text-agro-600 font-medium transition-colors">Home</a> <a href="#features" class="text-gray-600 hover:text-agro-600 font-medium transition-colors">Features</a> <a href="Login.html" class="text-gray-600 hover:text-agro-600 font-medium transition-colors">Login</a> <a href="Registration.html" class="bg-agro-600 hover:bg-agro-700 text-white px-5 py-2 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-agro-200">Register</a>
+      </div><!-- Mobile Menu Button --> <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+       <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+       </svg></button>
+     </div><!-- Mobile Menu -->
+     <div id="mobile-menu" class="hidden md:hidden pb-4">
+      <div class="flex flex-col gap-3 pt-2 border-t border-gray-100">
+       <a href="#home" class="text-gray-600 hover:text-agro-600 font-medium py-2 transition-colors">Home</a> <a href="#features" class="text-gray-600 hover:text-agro-600 font-medium py-2 transition-colors">Features</a> <a href="Login.html" class="text-gray-600 hover:text-agro-600 font-medium py-2 transition-colors">Login</a> <a href="Registration.html" class="bg-agro-600 hover:bg-agro-700 text-white px-5 py-2.5 rounded-lg font-medium text-center transition-all">Register</a>
+      </div>
+     </div>
+    </div>
+   </nav><!-- Hero Section -->
+   <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 bg-gradient-to-br from-agro-50 via-white to-agro-50/50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+      <div class="flex-1 text-center lg:text-left">
+       <h1 id="hero-headline" class="text-5xl md:text-6xl lg:text-7xl font-black text-agro-700 leading-tight mb-4"> Your Crop. Your Price. Your Power.<br>
+       <p id="hero-description" class="text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">Real-time crop prices. Instant alerts. Better profits.</p>
+       <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+        <a href="Registration.html" class="bg-agro-600 hover:bg-agro-700 text-white px-8 py-3.5 rounded-xl font-semibold text-lg transition-all hover:shadow-xl hover:shadow-agro-200 hover:-translate-y-0.5 inline-flex items-center justify-center gap-2"> Get Started 
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+         </svg></a> <a href="Login.html" class="border-2 border-agro-600 text-agro-600 hover:bg-agro-50 px-8 py-3.5 rounded-xl font-semibold text-lg transition-all inline-flex items-center justify-center"> Login </a>
+       </div>
+      </div><!-- Hero Illustration -->
+      <div class="flex-1 w-full max-w-lg lg:max-w-none">
+       <div class="relative">
+        <div class="absolute inset-0 bg-agro-200 rounded-3xl blur-3xl opacity-30 transform rotate-6"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl shadow-agro-100 p-8 border border-agro-100">
+         <!-- Mini Dashboard Preview -->
+         <div class="space-y-4">
+          <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+           <span class="font-semibold text-gray-700">Today's Prices</span> <span class="text-sm text-agro-600 font-medium">Live</span>
+          </div>
+          <div class="space-y-3">
+           <div class="flex items-center justify-between p-3 bg-agro-50 rounded-xl">
+            <div class="flex items-center gap-3">
+             <span class="text-2xl">🌾</span> <span class="font-medium text-gray-700">Wheat</span>
+            </div>
+            <div class="text-right">
+             <div class="font-semibold text-gray-900">
+              ₹2,450/qtl
+             </div>
+             <div class="text-sm text-agro-600">
+              ↑ 3.2%
+             </div>
+            </div>
+           </div>
+           <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+            <div class="flex items-center gap-3">
+             <span class="text-2xl">🌽</span> <span class="font-medium text-gray-700">Corn</span>
+            </div>
+            <div class="text-right">
+             <div class="font-semibold text-gray-900">
+              ₹1,890/qtl
+             </div>
+             <div class="text-sm text-red-500">
+              ↓ 1.1%
+             </div>
+            </div>
+           </div>
+           <div class="flex items-center justify-between p-3 bg-agro-50 rounded-xl">
+            <div class="flex items-center gap-3">
+             <span class="text-2xl">🍚</span> <span class="font-medium text-gray-700">Rice</span>
+            </div>
+            <div class="text-right">
+             <div class="font-semibold text-gray-900">
+              ₹3,120/qtl
+             </div>
+             <div class="text-sm text-agro-600">
+              ↑ 2.8%
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- How It Works Section -->
+   <section class="py-16 md:py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">From data collection to your phone — a simple 4-step process to keep you informed</p>
+     </div>
+     <div class="relative">
+      <!-- Connection Line (Desktop) -->
+      <div class="hidden lg:block absolute top-16 left-[12%] right-[12%] h-0.5 bg-gradient-to-r from-agro-200 via-agro-400 to-agro-200"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+       <!-- Step 1 -->
+       <div class="relative text-center group">
+        <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-agro-100 to-agro-50 rounded-2xl flex items-center justify-center shadow-lg shadow-agro-100 group-hover:shadow-xl group-hover:shadow-agro-200 transition-all group-hover:-translate-y-1">
+         <svg class="w-14 h-14 text-agro-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+         </svg>
+        </div>
+        <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-8 bg-agro-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
+         1
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Data Collection</h3>
+        <p class="text-gray-600">Real-time price data gathered from multiple agricultural markets</p>
+       </div><!-- Step 2 -->
+       <div class="relative text-center group">
+        <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-agro-100 to-agro-50 rounded-2xl flex items-center justify-center shadow-lg shadow-agro-100 group-hover:shadow-xl group-hover:shadow-agro-200 transition-all group-hover:-translate-y-1">
+         <svg class="w-14 h-14 text-agro-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+         </svg>
+        </div>
+        <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-8 bg-agro-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
+         2
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Price Monitoring</h3>
+        <p class="text-gray-600">Continuous tracking and analysis of price trends and patterns</p>
+       </div><!-- Step 3 -->
+       <div class="relative text-center group">
+        <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-agro-100 to-agro-50 rounded-2xl flex items-center justify-center shadow-lg shadow-agro-100 group-hover:shadow-xl group-hover:shadow-agro-200 transition-all group-hover:-translate-y-1">
+         <svg class="w-14 h-14 text-agro-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+         </svg>
+        </div>
+        <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-8 bg-agro-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
+         3
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Alert Generation</h3>
+        <p class="text-gray-600">Smart alerts triggered when prices match your set criteria</p>
+       </div><!-- Step 4 -->
+       <div class="relative text-center group">
+        <div class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-agro-100 to-agro-50 rounded-2xl flex items-center justify-center shadow-lg shadow-agro-100 group-hover:shadow-xl group-hover:shadow-agro-200 transition-all group-hover:-translate-y-1">
+         <svg class="w-14 h-14 text-agro-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 9h6m-6 4h4" />
+         </svg>
+        </div>
+        <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-8 bg-agro-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg">
+         4
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">Farmer Notification</h3>
+        <p class="text-gray-600">Instant notifications delivered to your phone via SMS or app</p>
+       </div>
+      </div>
+     </div><!-- Flow Diagram -->
+     <div class="mt-16 p-6 bg-gradient-to-r from-agro-50 via-white to-agro-50 rounded-2xl border border-agro-100">
+      <div class="flex flex-wrap items-center justify-center gap-4 text-sm font-medium">
+       <span class="px-4 py-2 bg-agro-600 text-white rounded-lg shadow-md">Data Source</span>
+       <svg class="w-6 h-6 text-agro-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+       </svg><span class="px-4 py-2 bg-white text-agro-700 rounded-lg shadow-md border border-agro-200">Database</span>
+       <svg class="w-6 h-6 text-agro-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+       </svg><span class="px-4 py-2 bg-white text-agro-700 rounded-lg shadow-md border border-agro-200">Monitoring</span>
+       <svg class="w-6 h-6 text-agro-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+       </svg><span class="px-4 py-2 bg-white text-agro-700 rounded-lg shadow-md border border-agro-200">Alert</span>
+       <svg class="w-6 h-6 text-agro-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+       </svg><span class="px-4 py-2 bg-agro-600 text-white rounded-lg shadow-md">Farmer</span>
+      </div>
+     </div>
+    </div>
+   </section><!-- Features Section -->
+   <section id="features" class="py-16 md:py-24 bg-gradient-to-b from-agro-50/50 to-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="text-center mb-16">
+      <h2 id="features-title" class="text-4xl md:text-5xl font-black text-gray-900 mb-3">Core Features</h2>
+      <p class="text-gray-600">Everything you need to track prices and sell smarter</p>
+     </div>
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Feature 1 -->
+      <div class="bg-white p-8 rounded-2xl shadow-lg shadow-gray-100 border border-gray-100 hover:shadow-xl hover:border-agro-200 transition-all group">
+       <div class="w-16 h-16 bg-agro-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-agro-200 transition-colors">
+        <svg class="w-8 h-8 text-agro-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+       </div>
+       <h3 class="text-xl font-semibold text-gray-900 mb-3">Daily Price Tracking</h3>
+       <p class="text-gray-600">Live updates for all major crops</p>
+      </div><!-- Feature 2 -->
+      <div class="bg-white p-8 rounded-2xl shadow-lg shadow-gray-100 border border-gray-100 hover:shadow-xl hover:border-agro-200 transition-all group">
+       <div class="w-16 h-16 bg-agro-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-agro-200 transition-colors">
+        <svg class="w-8 h-8 text-agro-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+       </div>
+       <h3 class="text-xl font-semibold text-gray-900 mb-3">Market Comparison</h3>
+       <p class="text-gray-600">Find the best prices across mandis</p>
+      </div><!-- Feature 3 -->
+      <div class="bg-white p-8 rounded-2xl shadow-lg shadow-gray-100 border border-gray-100 hover:shadow-xl hover:border-agro-200 transition-all group">
+       <div class="w-16 h-16 bg-agro-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-agro-200 transition-colors">
+        <svg class="w-8 h-8 text-agro-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+       </div>
+       <h3 class="text-xl font-semibold text-gray-900 mb-3">Instant Alerts</h3>
+       <p class="text-gray-600">Get notified when prices hit your target</p>
+      </div><!-- Feature 4 -->
+      <div class="bg-white p-8 rounded-2xl shadow-lg shadow-gray-100 border border-gray-100 hover:shadow-xl hover:border-agro-200 transition-all group">
+       <div class="w-16 h-16 bg-agro-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-agro-200 transition-colors">
+        <svg class="w-8 h-8 text-agro-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+        </svg>
+       </div>
+       <h3 class="text-xl font-semibold text-gray-900 mb-3">Simple Interface</h3>
+       <p class="text-gray-600">Easy to use. No technical knowledge needed</p>
+      </div>
+     </div>
+    </div>
+   </section><!-- Footer -->
+   <footer class="bg-gray-900 text-white py-12 mt-auto">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <!-- Brand -->
+      <div class="md:col-span-2">
+       <div class="flex items-center gap-2.5 mb-4"><span class="text-3xl">🌱</span><span class="text-xl font-bold text-white">AgroNotify</span>
+       </div>
+       <p id="footer-description" class="text-gray-400 max-w-md">Track prices. Make smarter decisions. Maximize profits.</p>
+      </div><!-- Contact -->
+      <div>
+       <h4 class="font-semibold text-lg mb-4">Contact</h4>
+       <div class="space-y-2 text-gray-400">
+        <p id="contact-email" class="flex items-center gap-2">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+         </svg> support@agronotify.com</p>
+       </div>
+      </div>
+     </div>
+     <div class="pt-8 border-t border-gray-800 text-center text-gray-500">
+      <p>© 2026 AgroNotify. All rights reserved.</p>
+     </div>
+    </div>
+   </footer>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      hero_headline: 'Track Prices. Sell Smart.',
+      hero_description: 'Real-time crop prices. Instant alerts. Better profits.',
+      features_title: 'Core Features',
+      footer_description: 'Track prices. Make smarter decisions. Maximize profits.',
+      contact_email: 'support@agronotify.com',
+      primary_color: '#16a34a',
+      secondary_color: '#f0fdf4',
+      text_color: '#1f2937',
+      button_color: '#16a34a',
+      accent_color: '#dcfce7'
+    };
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close mobile menu when clicking a link
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          // Update hero section
+          const heroHeadline = document.getElementById('hero-headline');
+          const headlineText = config.hero_headline || defaultConfig.hero_headline;
+          const parts = headlineText.split('.');
+          if (parts.length > 1) {
+            heroHeadline.innerHTML = `${parts[0]}.<br><span class="text-agro-600">${parts.slice(1).join('.').trim()}</span>`;
+          } else {
+            heroHeadline.textContent = headlineText;
+          }
+          
+          document.getElementById('hero-description').textContent = config.hero_description || defaultConfig.hero_description;
+          
+          // Update features section
+          document.getElementById('features-title').textContent = config.features_title || defaultConfig.features_title;
+          
+          // Update footer
+          document.getElementById('footer-description').textContent = config.footer_description || defaultConfig.footer_description;
+          
+          // Update contact email
+          const emailEl = document.getElementById('contact-email');
+          const emailIcon = emailEl.querySelector('svg').outerHTML;
+          emailEl.innerHTML = emailIcon + (config.contact_email || defaultConfig.contact_email);
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.secondary_color || defaultConfig.secondary_color,
+              set: (value) => window.elementSdk.setConfig({ secondary_color: value })
+            },
+            {
+              get: () => config.accent_color || defaultConfig.accent_color,
+              set: (value) => window.elementSdk.setConfig({ accent_color: value })
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => window.elementSdk.setConfig({ text_color: value })
+            },
+            {
+              get: () => config.primary_color || defaultConfig.primary_color,
+              set: (value) => window.elementSdk.setConfig({ primary_color: value })
+            },
+            {
+              get: () => config.button_color || defaultConfig.button_color,
+              set: (value) => window.elementSdk.setConfig({ button_color: value })
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['hero_headline', config.hero_headline || defaultConfig.hero_headline],
+          ['hero_description', config.hero_description || defaultConfig.hero_description],
+          ['features_title', config.features_title || defaultConfig.features_title],
+          ['footer_description', config.footer_description || defaultConfig.footer_description],
+          ['contact_email', config.contact_email || defaultConfig.contact_email]
+        ])
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d0df6c6c6ab1432',t:'MTc3MTU5MDA4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,289 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroNotify - Register</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+  padding:20px;
+}
+
+.container{
+  background:#fff;
+  width:100%;
+  max-width:450px;
+  padding:35px 30px;
+  border-radius:18px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.08);
+}
+
+.logo{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.logo span{
+  font-size:40px;
+}
+
+.logo h1{
+  font-size:26px;
+  color:#166534;
+  margin-top:8px;
+}
+
+.title{
+  text-align:center;
+  margin-bottom:20px;
+  font-size:20px;
+  font-weight:600;
+  color:#14532d;
+}
+
+.form-group{
+  margin-bottom:16px;
+}
+
+label{
+  display:block;
+  font-size:14px;
+  margin-bottom:6px;
+  color:#374151;
+}
+
+input, select{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  font-size:14px;
+  transition:0.3s;
+}
+
+input:focus, select:focus{
+  border-color:#16a34a;
+  outline:none;
+}
+
+.checkbox-group{
+  display:flex;
+  align-items:center;
+  margin-top:10px;
+  font-size:13px;
+}
+
+.checkbox-group input{
+  width:auto;
+  margin-right:8px;
+}
+
+.error{
+  color:red;
+  font-size:12px;
+  display:none;
+  margin-top:5px;
+}
+
+button{
+  width:100%;
+  padding:13px;
+  border:none;
+  border-radius:10px;
+  background:#16a34a;
+  color:#fff;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+  margin-top:15px;
+}
+
+button:hover{
+  background:#15803d;
+}
+
+.bottom-text{
+  text-align:center;
+  margin-top:18px;
+  font-size:14px;
+}
+
+.bottom-text a{
+  color:#16a34a;
+  text-decoration:none;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">
+    <span>🌱</span>
+    <h1>AgroNotify</h1>
+  </div>
+
+  <div class="title">Create Your Account</div>
+
+ <form id="registerForm" action="http://localhost:5000/register" method="POST">
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter full name">
+      <div class="error" id="nameError">Please enter your name</div>
+    </div>
+
+    <div class="form-group">
+      <label>Mobile Number</label>
+      <input type="text" id="mobile" name="mobile"="Enter 10-digit mobile number">
+      <div class="error" id="mobileError">Enter valid 10-digit mobile number</div>
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter email">
+      <div class="error" id="emailError">Please enter valid email</div>
+    </div>
+
+    <div class="form-group">
+      <label>State</label>
+      <select id="state">
+        <option value="">Select State</option>
+        <option>Maharashtra</option>
+        <option>Karnataka</option>
+        <option>Gujarat</option>
+        <option>Madhya Pradesh</option>
+        <option>Rajasthan</option>
+        <option>Punjab</option>
+        <option>Uttar Pradesh</option>
+        <option>Tamil Nadu</option>
+      </select>
+      <div class="error" id="stateError">Please select your state</div>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" name="password" ="Create password">
+      <div class="error" id="passwordError">Password must be at least 6 characters</div>
+    </div>
+
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <input type="password" id="confirmPassword" placeholder="Confirm password">
+      <div class="error" id="confirmError">Passwords do not match</div>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="terms">
+      <label for="terms">I agree to Terms & Conditions</label>
+    </div>
+    <div class="error" id="termsError">You must accept terms</div>
+
+    <button type="submit">Register</button>
+
+  </form>
+
+  <div class="bottom-text">
+    Already have an account?
+    <a href="Login.html">Login</a>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById("registerForm");
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+  let valid = true;
+
+  const name = document.getElementById("name");
+  const mobile = document.getElementById("mobile");
+  const email = document.getElementById("email");
+  const state = document.getElementById("state");
+  const password = document.getElementById("password");
+  const confirmPassword = document.getElementById("confirmPassword");
+  const terms = document.getElementById("terms");
+
+  if(name.value.trim() === ""){
+    document.getElementById("nameError").style.display = "block";
+    valid = false;
+  } else document.getElementById("nameError").style.display = "none";
+
+  if(!/^[0-9]{10}$/.test(mobile.value)){
+    document.getElementById("mobileError").style.display = "block";
+    valid = false;
+  } else document.getElementById("mobileError").style.display = "none";
+
+  if(email.value.trim() === ""){
+    document.getElementById("emailError").style.display = "block";
+    valid = false;
+  } else document.getElementById("emailError").style.display = "none";
+
+  if(state.value === ""){
+    document.getElementById("stateError").style.display = "block";
+    valid = false;
+  } else document.getElementById("stateError").style.display = "none";
+
+  if(password.value.length < 6){
+    document.getElementById("passwordError").style.display = "block";
+    valid = false;
+  } else document.getElementById("passwordError").style.display = "none";
+
+  if(password.value !== confirmPassword.value){
+    document.getElementById("confirmError").style.display = "block";
+    valid = false;
+  } else document.getElementById("confirmError").style.display = "none";
+
+  if(!terms.checked){
+    document.getElementById("termsError").style.display = "block";
+    valid = false;
+  } else document.getElementById("termsError").style.display = "none";
+
+   if(valid){
+
+     fetch("http://localhost:5000/api/auth/register",{
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name.value,
+      mobile: mobile.value,
+      email:email.value,
+      state: state.value,
+      password: password.value
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    alert("Something went wrong");
+  });
+
+}
+});
+</script>
+
+</body>
+</html>

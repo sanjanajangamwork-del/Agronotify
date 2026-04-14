@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="en" class="h-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroNotify - Smart Farming Dashboard</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .notification-slide {
+      animation: slideIn 0.4s ease-out, slideOut 0.4s ease-in 4.6s;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    .table-row-hover:hover {
+      background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, rgba(34, 197, 94, 0.04) 100%);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+
+    .card-shadow {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .select-styled {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-position: right 0.75rem center;
+      background-repeat: no-repeat;
+      background-size: 1.25rem;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 3px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .alert-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background: #f5f5f5;
+}
+
+.alert-item.triggered {
+  background: #ffe5e5;
+  border-left: 4px solid red;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  background: red;
+  color: white;
+}
+
+.badge.pending {
+  background: green;
+}
+  </style>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<spbody class="h-full bg-gradient-to-br from-green-50 via-white to-emerald-50">
+  <div id="app-wrapper" class="h-full w-full flex flex-col overflow-auto"><!-- Navigation Bar -->
+    <nav id="navbar" class="sticky top-0 z-50 bg-white border-b border-green-100 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center gap-2"><span class="text-2xl">🌱</span> <span
+              class="text-xl font-bold text-green-700">AgroNotify</span>
+          </div> <button onclick="logout()"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-all duration-200">
+
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+
+            <span class="hidden sm:inline">Logout</span>
+
+          </button>
+        </div>
+      </div>
+    </nav><!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6"><!-- Dashboard Header -->
+      <header class="fade-in">
+        <h1 id="dashboard-title" class="text-2xl sm:text-3xl font-bold text-gray-800">Crop Market Price Dashboard</h1>
+        <p id="welcome-message" class="mt-2 text-gray-600">Welcome back! Monitor real-time crop prices and set smart
+          alerts for your farm.</p>
+      </header><!-- Filters Section -->
+      <section class="bg-white rounded-2xl p-4 sm:p-6 card-shadow fade-in">
+        <div class="flex items-center gap-2 mb-4">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+            </path>
+          </svg>
+          <h2 class="text-lg font-semibold text-gray-800">Filter Market Data</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div><label for="filter-state" class="block text-sm font-medium text-gray-700 mb-1.5">State</label> <select
+              id="filter-state"
+              class="select-styled w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer transition-all">
+              <option value="">All States</option>
+            </select>
+          </div>
+          <div><label for="filter-district" class="block text-sm font-medium text-gray-700 mb-1.5"> district</label>
+            <select id="filter-district"
+              class="select-styled w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer transition-all">
+              <option value="">All districts</option>
+            </select>
+          </div>
+          <div><label for="filter-market" class="block text-sm font-medium text-gray-700 mb-1.5">Market</label> <select
+              id="filter-market"
+              class="select-styled w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer transition-all">
+              <option value="">All Markets</option>
+            </select>
+          </div>
+          <div><label for="filter-crop" class="block text-sm font-medium text-gray-700 mb-1.5">Crop Name</label> <select
+              id="filter-crop"
+              class="select-styled w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer transition-all">
+              <option value="">All Crops</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2"><button id="reset-filters"
+            class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-200">
+            Reset Filters </button> <span id="results-count"
+            class="px-3 py-2 text-sm text-green-700 bg-green-50 rounded-lg"></span>
+        </div>
+      </section><!-- Data Table Section -->
+      <section class="bg-white rounded-2xl card-shadow overflow-hidden fade-in">
+        <div class="p-4 sm:p-6 border-b border-gray-100">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+              </path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-800">Market Prices</h2>
+          </div>
+        </div>
+        <div class="overflow-x-auto scrollbar-thin">
+          <table class="w-full min-w-[800px]">
+            <thead class="bg-gradient-to-r from-green-50 to-emerald-50">
+              <tr>
+                <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-green-800 uppercase tracking-wider">
+                  Crop Name</th>
+                <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-green-800 uppercase tracking-wider">
+                  State</th>
+                <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-green-800 uppercase tracking-wider">
+                  district</th>
+                <th class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-green-800 uppercase tracking-wider">
+                  Market</th>
+                <th class="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-green-800 uppercase tracking-wider">
+                  Min Price</th>
+                <th class="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-green-800 uppercase tracking-wider">
+                  Max Price</th>
+                <th class="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-green-800 uppercase tracking-wider">
+                  Avg Price (₹/Q)</th>
+              </tr>
+            </thead>
+            <tbody id="price-table-body" class="divide-y divide-gray-100">
+              <!-- Table rows will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section><!-- Price Alert Section -->
+      <section class="bg-white rounded-2xl p-4 sm:p-6 card-shadow fade-in">
+        <div class="flex items-center gap-2 mb-6">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+            </path>
+          </svg>
+          <h2 class="text-lg font-semibold text-gray-800">Set Price Alert</h2>
+        </div>
+        <form id="alert-form" class="space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div><label for="alert-crop" class="block text-sm font-medium text-gray-700 mb-1.5">Select Crop</label>
+              <select id="alert-crop" required
+                class="select-styled w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer transition-all">
+                <option value="">Choose a crop</option>
+              </select>
+            </div>
+            <div><label for="alert-state" class="block text-sm font-medium text-gray-700 mb-1.5">Select State</label>
+              <select id="alert-state" required
+                class="select-styled w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer transition-all">
+                <option value="">Choose a state</option>
+              </select>
+            </div>
+            <div><label for="alert-market" class="block text-sm font-medium text-gray-700 mb-1.5">Select Market</label>
+              <select id="alert-market" required
+                class="select-styled w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer transition-all">
+                <option value="">Choose a market</option>
+              </select>
+            </div>
+            <div><label for="alert-price" class="block text-sm font-medium text-gray-700 mb-1.5">Target Price
+                (₹/Quintal)</label> <input type="number" id="alert-price" required min="1"
+                placeholder="Enter target price"
+                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+            </div>
+            <div><label for="alert-type" class="block text-sm font-medium text-gray-700 mb-1.5">Alert Condition</label>
+              <select id="alert-type" required
+                class="select-styled w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer transition-all">
+                <option value="">Select condition</option>
+                <option value="above">Notify when price goes ABOVE</option>
+                <option value="below">Notify when price goes BELOW</option>
+              </select>
+            </div>
+            <div class="flex items-end"><button type="submit" id="save-alert-btn"
+                class="btn-primary w-full px-6 py-2.5 text-white font-semibold rounded-xl flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                  </path>
+                </svg><span>Save Alert</span> </button>
+            </div>
+          </div>
+        </form><!-- Active Alerts List -->
+        <div class="mt-8">
+          <h3 class="text-md font-semibold text-gray-700 mb-4">Active Alerts</h3>
+          <div id="alertsList" class="space-y-3">
+            <p class="text-gray-500 text-sm italic">No alerts set yet. Create your first price alert above.</p>
+          </div>
+        </div>
+      </section>
+    </main><!-- Footer -->
+    <footer class="bg-white border-t border-green-100 py-4 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-center text-sm text-gray-500">© 2026 AgroNotify. Empowering farmers with smart market insights.
+        </p>
+      </div>
+    </footer><!-- Notification Container -->
+    <div id="notification-container" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm"></div>
+  </div>
+  <div id="priceContainer"></div>
+
+  <script>
+
+    // Default configuration
+    const defaultConfig = {
+      dashboard_title: 'Crop Market Price Dashboard',
+      welcome_message: 'Welcome back! Monitor real-time crop prices and set smart alerts for your farm.',
+      background_color: '#f0fdf4',
+      surface_color: '#ffffff',
+      text_color: '#1f2937',
+      primary_action_color: '#16a34a',
+      secondary_action_color: '#15803d',
+      font_family: 'Plus Jakarta Sans',
+      font_size: 16
+    };
+
+    // Alerts storage
+    let savedAlerts = [];
+    let isLoading = false;
+
+    // Helper functions
+    function getUniqueValues(key) {
+      return [...new Set(marketData.map(item => item[key]))].sort();
+    }
+
+    function getdistrictsByState(state) {
+      if (!state) return getUniqueValues('district');
+ return [...new Set(marketData.filter(item => item.state?.trim().toLowerCase() === state.trim().toLowerCase()).map(item => item.district))].sort();
+    }
+
+    function getMarketsBydistrict(district) {
+      if (!district) return getUniqueValues('market');
+ return [...new Set(marketData.filter(item => item.district?.trim().toLowerCase() === district.trim().toLowerCase()).map(item => item.market))].sort();  
+  }
+
+      
+      function getCropEmoji(crop) {
+        const emojis = {
+          'Wheat': '🌾',
+          'Rice': '🍚',
+          'Soybean': '🫘',
+          'Cotton': '☁️',
+          'Onion': '🧅',
+          'Tomato': '🍅',
+          'Potato': '🥔',
+          'Maize': '🌽',
+          'Sugarcane': '🎋',
+          'Gram': '🫛',
+          'Groundnut': '🥜',
+          'Cumin': '🌿',
+          'Mustard': '🌻',
+          'Bajra': '🌾',
+          'Coffee': '☕',
+          'Arecanut': '🌴',
+          'Banana': '🍌',
+          'Turmeric': '🟡',
+          'Coconut': '🥥',
+          'Chilli': '🌶️'
+        };
+        return emojis[crop] || '🌱';
+      }
+       // Notification system
+      function showNotification(message, type = 'success') {
+        const container = document.getElementById('notification-container');
+        const notification = document.createElement('div');
+        notification.className = `notification-slide p-4 rounded-xl shadow-lg flex items-start gap-3 ${type === 'success' ? 'bg-green-600' : type === 'warning' ? 'bg-amber-500' : 'bg-red-500'
+          } text-white`;
+
+        notification.innerHTML = `
+        <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          ${type === 'success'
+            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>'
+          }
+        </svg>
+        <div class="flex-1">
+          <p class="font-medium">${message}</p>
+        </div>
+      `;
+
+        container.appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+        }, 5000);
+      }
+
+    // Populate filter dropdowns
+    function populateFilters() {
+      const states = getUniqueValues('state');
+      const crops = getUniqueValues('crop');
+      const district = getUniqueValues('district');
+      const market = getUniqueValues('market');
+
+      const stateSelect = document.getElementById('filter-state');
+      const cropSelect = document.getElementById('filter-crop');
+      const districtSelect = document.getElementById("filter-district");
+      const marketSelect = document.getElementById("filter-market");
+
+      const alertCropSelect = document.getElementById('alert-crop');
+      const alertStateSelect = document.getElementById('alert-state');
+      const alertdistrictSelect = document.getElementById('alert-district');
+      const alertmarketSelect = document.getElementById('alert-market');
+      const alerttargetpriceSelect = document.getElementById('alert-price');
+      const alertconditionSelect = document.getElementById('alert-type');
+
+      // Populate state filters
+      states.forEach(state => {
+        stateSelect.innerHTML += `<option value="${state}">${state}</option>`;
+        alertStateSelect.innerHTML += `<option value="${state}">${state}</option>`;
+      });
+
+      // Populate crop filters
+      crops.forEach(crop => {
+        cropSelect.innerHTML += `<option value="${crop}">${crop}</option>`;
+        alertCropSelect.innerHTML += `<option value="${crop}">${crop}</option>`;
+      });
+
+      // ---- DISTRICT ----
+      const districts = [...new Set(marketData.map(item => item.district))];
+      districtSelect.innerHTML = '<option value="">All Districts</option>';
+      districts.forEach(d => {
+        districtSelect.innerHTML += `<option value="${d}">${d}</option>`;
+      });
+
+      // ---- MARKET ----
+      const markets = [...new Set(marketData.map(item => item.market))];
+      marketSelect.innerHTML = '<option value="">All Markets</option>';
+      markets.forEach(m => {
+        marketSelect.innerHTML += `<option value="${m}">${m}</option>`;
+      });
+    }
+    // Filters
+     function updatedistrictDropdown() {
+  const state = document.getElementById('filter-state').value;
+  const districtSelect = document.getElementById('filter-district');
+
+  const districts = state
+    ? [...new Set(
+        marketData
+          .filter(item => item.state?.trim().toLowerCase() === state.trim().toLowerCase())
+          .map(item => item.district)
+      )]
+    : [...new Set(marketData.map(item => item.district))];
+
+  districtSelect.innerHTML = '<option value="">All districts</option>';
+  districts.forEach(d => {
+    districtSelect.innerHTML += `<option value="${d}">${d}</option>`;
+  });
+  updateMarketDropdown();
+}
+
+function updateMarketDropdown() {
+  const district = document.getElementById('filter-district').value;
+  const marketSelect = document.getElementById('filter-market');
+
+  const markets = district
+    ? [...new Set(
+        marketData
+          .filter(item => item.district?.trim().toLowerCase() === district.trim().toLowerCase())
+          .map(item => item.market)
+      )]
+    : [...new Set(marketData.map(item => item.market))];
+
+  marketSelect.innerHTML = '<option value="">All Markets</option>';
+  markets.forEach(m => {
+    marketSelect.innerHTML += `<option value="${m}">${m}</option>`;
+  });
+
+
+}
+       function populateAlertMarketDropdown() {
+    const stateSelect = document.getElementById('alert-state');
+    const marketSelect = document.getElementById('alert-market');
+
+    const selectedState = stateSelect.value;
+
+    const markets = selectedState
+        ? marketData
+            .filter(item => item.state === selectedState)
+            .map(item => item.market)
+            .filter((v, i, a) => a.indexOf(v) === i)
+            .sort()
+        : getUniqueValues('market'); // fallback to all markets
+
+    marketSelect.innerHTML = `<option value="">Select Market</option>` +
+        markets.map(m => `<option value="${m}">${m}</option>`).join('');
+}
+    // Filter and render table
+    function filterData() {
+      const state = document.getElementById('filter-state').value || "";
+      const district = document.getElementById('filter-district').value || "";
+      const market = document.getElementById('filter-market').value || "";
+      const crop = document.getElementById('filter-crop').value || "";
+
+      let filtered = marketData;
+
+      if (state)
+        filtered = filtered.filter(
+          item => item.state?.trim().toLowerCase() === state.trim().toLowerCase()
+        );
+
+      if (district)
+        filtered = filtered.filter(
+          item => item.district?.trim().toLowerCase() === district.trim().toLowerCase()
+        );
+
+      if (market)
+        filtered = filtered.filter(
+          item => item.market?.trim().toLowerCase() === market.trim().toLowerCase()
+        );
+
+      if (crop) {
+        filtered = filtered.filter(
+          item => item.crop?.trim().toLowerCase() === crop.trim().toLowerCase()
+        );
+      }
+        renderTable(filtered);
+      }
+
+      function renderTable(data) {
+        const tbody = document.getElementById('price-table-body');
+        tbody.innerHTML = ''; // clear previous rows
+        if (data.length === 0) {
+          tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+              <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <p class="text-lg font-medium">No results found</p>
+              <p class="text-sm">Try adjusting your filters</p>
+            </td>
+          </tr>
+        `;
+          return;
+        }
+
+        tbody.innerHTML = data.map(item => `
+        <tr class="table-row-hover transition-all duration-200">
+          <td class="px-4 sm:px-6 py-4">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">${getCropEmoji(item.crop)}</span>
+              <span class="font-medium text-gray-800">${item.crop}</span>
+            </div>
+          </td>
+          <td class="px-4 sm:px-6 py-4 text-gray-600">${item.state}</td>
+          <td class="px-4 sm:px-6 py-4 text-gray-600">${item.district}</td>
+          <td class="px-4 sm:px-6 py-4 text-gray-600">${item.market}</td>
+          <td class="px-4 sm:px-6 py-4 text-right">
+            <span class="text-red-600 font-medium">₹${item.minPrice.toLocaleString()}</span>
+          </td>
+          <td class="px-4 sm:px-6 py-4 text-right">
+            <span class="text-green-600 font-medium">₹${item.maxPrice.toLocaleString()}</span>
+          </td>
+          <td class="px-4 sm:px-6 py-4 text-right">
+            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold text-sm">₹${item.avgPrice.toLocaleString()}</span>
+          </td>
+        </tr>
+      `).join('');
+      }
+
+    
+
+        alertsList.innerHTML = savedAlerts.map(alert => `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 gap-3">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">${getCropEmoji(alert.crop)}</span>
+            <div>
+              <p class="font-medium text-gray-800">${alert.crop} - ${alert.market}</p>
+              <p class="text-sm text-gray-600">
+                Alert when price goes <span class="font-semibold ${alert.alertType === 'above' ? 'text-green-600' : 'text-red-600'}">${alert.alertType}</span> ₹${alert.targetPrice.toLocaleString()}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-1 text-xs font-medium ${alert.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'} rounded-full">
+              ${alert.isActive ? 'Active' : 'Inactive'}
+            </span>
+            <button onclick="confirmDeleteAlert('${alert.id}')" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Delete alert">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>node server.js
+        </div>
+      `).join('');
+      
+
+      // Delete confirmation inline
+      let pendingDeleteId = null;
+
+      function confirmDeleteAlert(alertId) {
+        if (pendingDeleteId === alertId) {
+          deleteAlert(alertId);
+          pendingDeleteId = null;
+        } else {
+          pendingDeleteId = alertId;
+          showNotification('Click delete again to confirm removal', 'warning');
+          setTimeout(() => {
+            pendingDeleteId = null;
+          }, 3000);
+        }
+      }
+
+      async function deleteAlert(alertId) {
+        const alertToDelete = savedAlerts.find(a => a.id === alertId);
+        if (!alertToDelete) return;
+
+        if (window.dataSdk) {
+          const result = await window.dataSdk.delete(alertToDelete);
+          if (result.isOk) {
+            showNotification('Alert deleted successfully');
+          } else {
+            showNotification('Failed to delete alert', 'error');
+          }
+        }
+      }
+
+      // Check alerts against market data
+       
+ 
+
+        const crop = document.getElementById('alert-crop').value;
+        const state = document.getElementById('alert-state').value;
+        const market = document.getElementById('alert-market').value;
+        const targetPrice = parseInt(document.getElementById('alert-price').value);
+        const alertType = document.getElementById('alert-type').value;
+
+        if (!crop || !state || !market || !targetPrice || !alertType) {
+          showNotification('Please fill in all fields', 'error');
+          
+        }
+
+        const newAlert = {
+          id: Date.now().toString(),
+          crop,
+          state,
+          market,
+          targetPrice,
+          alertType,
+          createdAt: new Date().toISOString(),
+          isActive: true
+        };
+
+        isLoading = true;
+        const submitBtn = document.getElementById('save-alert-btn');
+        submitBtn.innerHTML = '<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Saving...</span>';
+        submitBtn.disabled = true;
+
+        if (window.dataSdk) {
+          const result = window.dataSdk.create(newAlert);
+          if (result.isOk) {
+            showNotification('Price alert saved successfully!');
+            e.target.reset();
+
+          
+          } else {
+            showNotification('Failed to save alert', 'error');
+          }
+        }
+
+        isLoading = false;
+        submitBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg><span>Save Alert</span>';
+        submitBtn.disabled = false;
+      
+
+      // Data handler for SDK
+      const dataHandler = {
+        onDataChanged(data) {
+          savedAlerts = data.map(item => ({
+            ...item,
+            targetPrice: Number(item.targetPrice),
+            isActive: item.isActive !== false
+          }));
+          renderAlerts();
+        }
+      };
+
+      // Element SDK configuration
+      async function onConfigChange(config) {
+        const title = document.getElementById('dashboard-title');
+        const welcome = document.getElementById('welcome-message');
+
+        if (title) {
+          title.textContent = config.dashboard_title || defaultConfig.dashboard_title;
+        }
+        if (welcome) {
+          welcome.textContent = config.welcome_message || defaultConfig.welcome_message;
+        }
+
+        // Apply font family
+        const fontFamily = config.font_family || defaultConfig.font_family;
+        document.body.style.fontFamily = `${fontFamily}, sans-serif`;
+
+        // Apply font size scaling
+        const baseSize = config.font_size || defaultConfig.font_size;
+        if (title) title.style.fontSize = `${baseSize * 1.75}px`;
+        if (welcome) welcome.style.fontSize = `${baseSize}px`;
+
+        // Apply colors
+        const bgColor = config.background_color || defaultConfig.background_color;
+        const surfaceColor = config.surface_color || defaultConfig.surface_color;
+        const textColor = config.text_color || defaultConfig.text_color;
+        const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+
+        document.getElementById('app-wrapper').style.background = `linear-gradient(135deg, ${bgColor} 0%, white 50%, ${bgColor} 100%)`;
+
+        document.querySelectorAll('.bg-white').forEach(el => {
+          el.style.backgroundColor = surfaceColor;
+        });
+
+        if (title) title.style.color = textColor;
+
+        const primaryBtns = document.querySelectorAll('.btn-primary');
+        primaryBtns.forEach(btn => {
+          btn.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${config.secondary_action_color || defaultConfig.secondary_action_color} 100%)`;
+        });
+      }
+
+      function mapToCapabilities(config) {
+        return {
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => { config.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => { config.surface_color = value; window.elementSdk.setConfig({ surface_color: value }); }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => { config.primary_action_color = value; window.elementSdk.setConfig({ primary_action_color: value }); }
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => { config.secondary_action_color = value; window.elementSdk.setConfig({ secondary_action_color: value }); }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => { config.font_family = value; window.elementSdk.setConfig({ font_family: value }); }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => { config.font_size = value; window.elementSdk.setConfig({ font_size: value }); }
+          }
+        };
+      }
+
+      function mapToEditPanelValues(config) {
+        return new Map([
+          ['dashboard_title', config.dashboard_title || defaultConfig.dashboard_title],
+          ['welcome_message', config.welcome_message || defaultConfig.welcome_message]
+        ]);
+      }
+        // Logout function
+      function logout() {
+        localStorage.removeItem("isLoggedIn");
+        window.location.href = "Login.html";
+      }
+        
+        let marketData = [];
+
+       async function fetchPrices() {
+        fetch("http://localhost:5000/api/crops")
+          .then(response => response.json())
+          .then(data => {
+            console.log("Backend Data:", data);
+
+            marketData = data.map(item => ({
+              crop: item.crop_name,
+              state: item.state,
+              district: item.district,
+              market: item.market,
+              minPrice: item.price,
+              maxPrice: item.price,
+              avgPrice: item.price
+            }));
+
+            populateFilters();
+            filterData();
+           renderTable(marketData);
+           populateAlertMarketDropdown();
+
+          })
+          .catch(error => {
+            console.error("Error fetching prices:", error);
+          });
+      }
+         
+        async function handleAlertSubmit(event) {
+  event.preventDefault(); // Prevent page reload
+
+  const userId = localStorage.getItem("userId");
+    
+  const crop = document.getElementById('alert-crop').value;
+  const state = document.getElementById('alert-state').value;
+  const market = document.getElementById('alert-market').value;
+  const target_price = document.getElementById('alert-price').value;
+  const alertType  = document.getElementById('alert-type').value;
+
+
+  
+  const newAlert = {
+    id: Date.now().toString(),
+    crop,
+    state,
+    market,
+    targetPrice: target_price,
+    alertType: alertType,
+    isActive: true
+  };
+  try {
+    const response = await fetch('http://localhost:5000/api/alerts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ crop ,state ,market,target_price,alertType,userId})
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert('Alert saved successfully!');
+       savedAlerts.push(newAlert);
+      renderAlerts();
+      document.getElementById('alert-form').reset();
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Failed to save alert.');
+  }
+}
+ 
+      
+ // FETCH ALERTS FROM DATABASE
+async function fetchAlerts() {
+    try {
+        const userId = localStorage.getItem("userId");
+        const response = await fetch(`http://localhost:5000/api/alerts?userId=${userId}`);
+        const data = await response.json();
+         if (!Array.isArray(data)) {
+            console.error("Backend did not return array:", data);
+            return;
+        }
+        savedAlerts = data.map(item => ({
+            id: item.id,
+            crop: item.crop,
+            state: item.state,
+            market: item.market,
+            targetPrice: Number(item.target_price),
+            alertType: item.condition
+
+        }));
+
+        renderAlerts();
+
+    } catch (error) {
+        console.error("Error fetching alerts:", error);
+    }
+}
+
+
+// DISPLAY ALERTS ON DASHBOARD
+ function renderAlerts() {
+    const alertsList = document.getElementById("alertsList");
+    if (!savedAlerts || savedAlerts.length === 0) {
+        alertsList.innerHTML = `
+            <p class="text-gray-500 text-sm italic">
+                No alerts set yet. Create your first price alert above.
+            </p>
+        `;
+        return;
+    }
+
+    alertsList.innerHTML = "";
+
+    savedAlerts.forEach(alert => {
+      
+        const li = document.createElement("li");
+
+    li.className = "alert-item";
+
+    // Highlight triggered alerts
+    if (alert.triggered) {
+      li.classList.add("triggered");
+    }
+           li.innerHTML = `
+      <div>
+        <strong>${alert.crop}</strong> 
+        when price ${alert.alertType} ₹${alert.targetPrice}
+      </div>
+      <div>
+        ${alert.triggered 
+          ? '<span class="badge">Triggered</span>' 
+          : '<span class="badge pending">Active</span>'}
+      </div>
+    `;
+
+
+        alertsList.appendChild(li);
+    });
+}
+     // Initialize application
+async function init() {
+    // Initialize Element SDK
+    if (window.elementSdk) {
+        window.elementSdk.init({
+            defaultConfig,
+            onConfigChange,
+            mapToCapabilities,
+            mapToEditPanelValues
+        });
+    }
+
+    // Initialize Data SDK
+    if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+            console.error('Failed to initialize data SDK');
+        }
+    }
+
+    // 1️⃣ Fetch data and wait for it
+    await fetchPrices();    
+    await fetchAlerts();// <- important to await
+
+    // 2️⃣ Populate filters now that marketData is ready
+    populateFilters();
+
+    // 3️⃣ Render full table initially
+    renderTable(marketData);
+  
+    // Event listeners for filters
+    document.getElementById('filter-state').addEventListener('change', () => {
+        updatedistrictDropdown();
+        filterData();
+    });
+    document.getElementById('filter-district').addEventListener('change', () => {
+        updateMarketDropdown();
+        filterData();
+    });
+    document.getElementById('filter-market').addEventListener('change', filterData);
+    document.getElementById('filter-crop').addEventListener('change', filterData);
+  
+   // --- Alert form state → market ---
+    document.getElementById('alert-state').addEventListener('change', () => {
+        populateAlertMarketDropdown();
+    });
+    // Reset filters
+    document.getElementById('reset-filters').addEventListener('click', () => {
+        document.getElementById('filter-state').value = '';
+        document.getElementById('filter-district').value = '';
+        document.getElementById('filter-market').value = '';
+        document.getElementById('filter-crop').value = '';
+        updatedistrictDropdown(); // reset district dropdown
+        updateMarketDropdown();   // reset market dropdown
+        filterData();
+        alert("Filters have been reset!");
+    });
+
+    // Alert form submission
+    document.getElementById('alert-form').addEventListener('submit', handleAlertSubmit);
+      
+  }
+      let alertInterval = null;
+ 
+  
+      // Protect dashboard
+      if (!localStorage.getItem("isLoggedIn")) {
+        window.location.href = "Login.html";
+      }
+
+      
+
+       
+      window.onload = init;
+    document.addEventListener("DOMContentLoaded", init);         
+  </script>
+</body>
+</html>
